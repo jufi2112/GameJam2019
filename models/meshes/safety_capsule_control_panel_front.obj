@@ -1,0 +1,16 @@
+# Blender v2.81 (sub 16) OBJ File: 'spcaeship.blend'
+# www.blender.org
+mtllib safety_capsule_control_panel_front.mtl
+v -13.546715 -0.028276 -6.010520
+v -13.106471 0.747201 -6.485889
+v -10.150975 -0.028276 -6.010520
+v -10.591220 0.747201 -6.485889
+vt 0.268100 0.852261
+vt 0.000517 0.760922
+vt 0.000517 0.239078
+vt 0.268100 0.147739
+vn 0.0000 0.5226 0.8526
+g Cylinder.003_Cylinder.003_Material.005
+usemtl Material.005
+s off
+f 3/1/1 4/2/1 2/3/1 1/4/1
