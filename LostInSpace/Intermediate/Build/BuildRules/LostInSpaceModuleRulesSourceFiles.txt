@@ -1,3 +1,0 @@
-F:\Unreal Projects\GameJam2019\LostInSpace\Source\LostInSpace\LostInSpace.Build.cs
-F:\Unreal Projects\GameJam2019\LostInSpace\Source\LostInSpace.Target.cs
-F:\Unreal Projects\GameJam2019\LostInSpace\Source\LostInSpaceEditor.Target.cs

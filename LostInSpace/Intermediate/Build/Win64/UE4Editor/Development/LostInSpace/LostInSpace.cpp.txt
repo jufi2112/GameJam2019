@@ -1,2 +1,0 @@
-F:\Unreal Projects\GameJam2019\LostInSpace\Intermediate\Build\Win64\UE4Editor\Development\LostInSpace\Definitions.LostInSpace.h
-F:\Unreal Projects\GameJam2019\LostInSpace\Source\LostInSpace\LostInSpace.h
