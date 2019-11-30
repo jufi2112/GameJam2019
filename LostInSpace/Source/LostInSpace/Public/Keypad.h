@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InteractionInterface.h"
+
 #include "Keypad.generated.h"
 
 UCLASS()
-class LOSTINSPACE_API AKeypad : public AActor
+class LOSTINSPACE_API AKeypad : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	

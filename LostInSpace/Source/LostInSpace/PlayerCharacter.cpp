@@ -3,7 +3,7 @@
 
 #include "PlayerCharacter.h"
 #include "Engine/World.h"
-#include "Components/InputComponent.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -17,7 +17,14 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (GetWorld())
+	{
+		World = GetWorld();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not get World in %s"), *GetName())
+	}
 }
 
 // Called every frame
@@ -25,7 +32,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CameraComponent && World)
+	{
+		// cast a ray to see if we can interact with objects
+		FVector StartPoint = CameraComponent->GetComponentLocation();
+		FVector EndPoint = StartPoint + CameraComponent->GetForwardVector() * InteractionRange;
+		FHitResult HitResult;
+		ECollisionChannel Channel = ECC_Visibility;
+		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams::DefaultQueryParam;
+		CollisionQueryParams.AddIgnoredActor(this);
+		FCollisionResponseParams CollisionResponseParams;
+		FCollisionShape CollisionShape = FCollisionShape::MakeSphere(15);
 
+		
+		if (World->SweepSingleByChannel(HitResult, StartPoint, EndPoint, CameraComponent->GetComponentRotation().Quaternion(), Channel, CollisionShape, CollisionQueryParams, CollisionResponseParams))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Found Something!"))
+		}
+
+	}
 
 }
 
@@ -74,5 +99,15 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void APlayerCharacter::SetCameraReference(UCameraComponent* CameraReference)
+{
+	if (!CameraReference)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Provided camera refernece is nullpointer in %s"), *GetName())
+		return;
+	}
+	CameraComponent = CameraReference;
 }
 
