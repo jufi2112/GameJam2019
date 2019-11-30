@@ -22,6 +22,6 @@ class LOSTINSPACE_API IInteractionInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Interaction")
-	bool Interact(const UObject* Caller);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
+	bool Interact(UObject* Caller);
 };

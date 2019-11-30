@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InteractionInterface.h"
 #include "Fuse.generated.h"
 
 class UPointLightComponent;
 
 UCLASS()
-class LOSTINSPACE_API AFuse : public AActor
+class LOSTINSPACE_API AFuse : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
@@ -17,12 +18,17 @@ public:
 	// Sets default values for this actor's properties
 	AFuse();
 
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State")
 	bool bIsActive = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light")
+	UPointLightComponent* Light = nullptr;
 
 public:	
 	// Called every frame
@@ -33,5 +39,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsActive(bool IsActive);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+	bool Interact(UObject* Caller);
+	virtual bool Interact_Implementation(UObject* Caller) override;
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UPointLightComponent* GetLight() const { return Light; }
+
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void SetLightReference(UPointLightComponent* LightReference);
 
 };

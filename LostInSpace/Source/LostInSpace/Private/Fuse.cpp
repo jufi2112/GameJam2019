@@ -15,6 +15,11 @@ AFuse::AFuse()
 void AFuse::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!Light)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No light component specified in %s"), *GetName())
+	}
 	
 }
 
@@ -28,5 +33,20 @@ void AFuse::Tick(float DeltaTime)
 void AFuse::SetIsActive(bool IsActive)
 {
 	bIsActive = IsActive;
+}
+
+bool AFuse::Interact_Implementation(UObject* Caller)
+{
+	return false;
+}
+
+void AFuse::SetLightReference(UPointLightComponent* LightReference)
+{
+	if (!LightReference)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Reference for Light specified in %s"), *GetName())
+		return;
+	}
+	Light = LightReference;
 }
 
