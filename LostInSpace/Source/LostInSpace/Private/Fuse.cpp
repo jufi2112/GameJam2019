@@ -29,6 +29,7 @@ void AFuse::BeginPlay()
 	else
 	{
 		DynamicMaterial = MeshComponent->CreateDynamicMaterialInstance(0, FuseMaterial);
+		MeshComponent->SetMaterial(0, DynamicMaterial);
 	}
 }
 
@@ -50,14 +51,18 @@ void AFuse::SetIsActive(bool IsActive)
 		}
 		else
 		{
-			DynamicMaterial->SetVectorParameterValue(FName("EmissionColor"), FVector(0, 0, 255));
+			DynamicMaterial->SetVectorParameterValue(FName("EmissionColor"), FVector(255, 0, 0));
 		}
 	}
 }
 
 bool AFuse::Interact_Implementation(UObject* Caller)
 {
-	return false;
+	if (DynamicMaterial)
+	{
+		SetIsActive(!bIsActive);
+	}
+	return true;
 }
 
 bool AFuse::CanBeInteractedWith_Implementation()
@@ -83,8 +88,9 @@ void AFuse::SetTextureIndex(int32 IndexToUse, float Intensity)
 	if (!FuseTextures.IsValidIndex(IndexToUse))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Specified TextureIndex in %s is not in range!"), *GetName())
-		return;
+			return;
 	}
+
 	if (MeshComponent && DynamicMaterial)
 	{
 		DynamicMaterial->SetTextureParameterValue(FName("BaseTexture"), FuseTextures[IndexToUse]);
