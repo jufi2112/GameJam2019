@@ -66,6 +66,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class APlayerController* PC = nullptr;
 
+	/* is the E-Interact message shown? */
+	bool bInteractMessageShown = false;
+
+	/* Interaction Key Pressed */
+	UFUNCTION(BlueprintCallable)
+	void Interact();
+
+	/* Actor we can currently Interact with. CARE: is nullptr if no such actor available */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
+	AActor* InteractableActor = nullptr;
+
 
 public:	
 	// Called every frame

@@ -8,6 +8,10 @@
 #include "Fuse.generated.h"
 
 class UPointLightComponent;
+class UTexture2D;
+class UMaterialInterface;
+class UMaterialInstanceDynamic;
+class UMeshComponent;
 
 UCLASS()
 class LOSTINSPACE_API AFuse : public AActor, public IInteractionInterface
@@ -18,6 +22,11 @@ public:
 	// Sets default values for this actor's properties
 	AFuse();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Materials")
+	TArray<UTexture2D*> FuseTextures;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Materials")
+	UMaterialInterface* FuseMaterial = nullptr;
 
 
 protected:
@@ -27,8 +36,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State")
 	bool bIsActive = true;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light")
-	UPointLightComponent* Light = nullptr;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Light")
+	//UPointLightComponent* Light = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	bool bCanBeInteractedWith = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UMeshComponent* MeshComponent = nullptr;
 
 public:	
 	// Called every frame
@@ -48,10 +66,17 @@ public:
 	bool CanBeInteractedWith();
 	virtual bool CanBeInteractedWith_Implementation() override;
 
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UPointLightComponent* GetLight() const { return Light; }
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void SetMeshReference(UMeshComponent* MeshReference);
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-	void SetLightReference(UPointLightComponent* LightReference);
+	void SetTextureIndex(int32 IndexToUse, float Intensity);
+
+
+	//UFUNCTION(BlueprintCallable)
+	//FORCEINLINE UPointLightComponent* GetLight() const { return Light; }
+
+	//UFUNCTION(BlueprintCallable, Category = "Setup")
+	//void SetLightReference(UPointLightComponent* LightReference);
 
 };

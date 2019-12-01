@@ -28,7 +28,7 @@ void APlayerCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not get World in %s"), *GetName())
 	}
-	GetWorld()->DebugDrawTraceTag = FName("Interaction_Trace");
+	//GetWorld()->DebugDrawTraceTag = FName("Interaction_Trace");
 
 	if (!CameraComponent)
 	{
@@ -54,6 +54,14 @@ void APlayerCharacter::BeginPlay()
 
 }
 
+void APlayerCharacter::Interact()
+{
+	if (InteractableActor)
+	{
+		IInteractionInterface::Execute_Interact(InteractableActor, this);
+	}
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
@@ -74,7 +82,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 		//UE_LOG(LogTemp, Warning, TEXT("TraceStart: %s"), *StartPoint.ToString())
 
-		
+		bool bFoundInteractableActor = false;
 		if (World->SweepSingleByChannel(HitResult, StartPoint, EndPoint, CameraComponent->GetComponentRotation().Quaternion(), Channel, CollisionShape, CollisionQueryParams, CollisionResponseParams))
 		{
 			// check if other actor does implement interaction interface
@@ -85,22 +93,22 @@ void APlayerCharacter::Tick(float DeltaTime)
 				bool bCanBeInteractedWith = IInteractionInterface::Execute_CanBeInteractedWith(OtherActor);
 				if (bCanBeInteractedWith)
 				{
-					// TODO dont do this if widget is already in viewport
-					InteractWidget->AddToViewport();
-				}
-				else
-				{
-					InteractWidget->RemoveFromViewport();
+					bFoundInteractableActor = true;
+					InteractableActor = OtherActor;
+					if (!InteractWidget->IsInViewport())
+					{
+						InteractWidget->AddToViewport();
+					}
 				}
 			}
-			else
+		}
+		if (!bFoundInteractableActor)
+		{
+			InteractableActor = nullptr;
+			if (InteractWidget->IsInViewport())
 			{
 				InteractWidget->RemoveFromViewport();
 			}
-		}
-		else
-		{
-			InteractWidget->RemoveFromViewport();
 		}
 
 	}
@@ -122,6 +130,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &APlayerCharacter::Interact);
 }
 
 void APlayerCharacter::MoveForward(float Value)
