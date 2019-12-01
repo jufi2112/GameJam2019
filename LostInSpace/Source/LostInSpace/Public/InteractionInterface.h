@@ -24,4 +24,7 @@ class LOSTINSPACE_API IInteractionInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 	bool Interact(UObject* Caller);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
+	bool CanBeInteractedWith();
 };

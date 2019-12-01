@@ -4,6 +4,9 @@
 #include "PlayerCharacter.h"
 #include "Engine/World.h"
 #include "Camera/CameraComponent.h"
+#include "InteractionInterface.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -25,6 +28,30 @@ void APlayerCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not get World in %s"), *GetName())
 	}
+	GetWorld()->DebugDrawTraceTag = FName("Interaction_Trace");
+
+	if (!CameraComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No camera component registered in %s"), *GetName())
+	}
+
+	PC = Cast<APlayerController>(GetController());
+	if (!PC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not get player controller in %s"), *GetName())
+	}
+	if (!InteractionWidgetClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Interaction widget class defined in %s"), *GetName())
+	}
+	else
+	{
+		if (PC)
+		{
+			InteractWidget = CreateWidget<UUserWidget>(PC, InteractionWidgetClass);
+		}
+	}
+
 }
 
 // Called every frame
@@ -32,7 +59,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CameraComponent && World)
+	if (CameraComponent && World && InteractWidget)
 	{
 		// cast a ray to see if we can interact with objects
 		FVector StartPoint = CameraComponent->GetComponentLocation();
@@ -41,13 +68,39 @@ void APlayerCharacter::Tick(float DeltaTime)
 		ECollisionChannel Channel = ECC_Visibility;
 		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams::DefaultQueryParam;
 		CollisionQueryParams.AddIgnoredActor(this);
+		CollisionQueryParams.TraceTag = FName("Interaction_Trace");
 		FCollisionResponseParams CollisionResponseParams;
 		FCollisionShape CollisionShape = FCollisionShape::MakeSphere(15);
+
+		//UE_LOG(LogTemp, Warning, TEXT("TraceStart: %s"), *StartPoint.ToString())
 
 		
 		if (World->SweepSingleByChannel(HitResult, StartPoint, EndPoint, CameraComponent->GetComponentRotation().Quaternion(), Channel, CollisionShape, CollisionQueryParams, CollisionResponseParams))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Found Something!"))
+			// check if other actor does implement interaction interface
+			AActor* OtherActor = HitResult.Actor.Get();
+			bool OtherActorImplementsInterface = OtherActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass());
+			if (OtherActorImplementsInterface)
+			{
+				bool bCanBeInteractedWith = IInteractionInterface::Execute_CanBeInteractedWith(OtherActor);
+				if (bCanBeInteractedWith)
+				{
+					// TODO dont do this if widget is already in viewport
+					InteractWidget->AddToViewport();
+				}
+				else
+				{
+					InteractWidget->RemoveFromViewport();
+				}
+			}
+			else
+			{
+				InteractWidget->RemoveFromViewport();
+			}
+		}
+		else
+		{
+			InteractWidget->RemoveFromViewport();
 		}
 
 	}

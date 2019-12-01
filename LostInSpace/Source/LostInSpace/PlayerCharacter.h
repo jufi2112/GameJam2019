@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+
 UCLASS()
 class LOSTINSPACE_API APlayerCharacter : public ACharacter
 {
@@ -30,6 +31,9 @@ public:
 	/* Interaction range of the character in cm */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	float InteractionRange = 150.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	TSubclassOf<class UUserWidget> InteractionWidgetClass = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -56,6 +60,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWorld* World = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class UUserWidget* InteractWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class APlayerController* PC = nullptr;
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -67,5 +78,8 @@ public:
 	void SetCameraReference(UCameraComponent* CameraReference);
 
 	FORCEINLINE class UCameraComponent* GetCameraComponent() const { return CameraComponent; }
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void ShowInteractionMessage(bool bShowMessage);
 
 };

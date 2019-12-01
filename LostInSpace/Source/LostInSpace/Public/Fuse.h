@@ -44,6 +44,10 @@ public:
 	bool Interact(UObject* Caller);
 	virtual bool Interact_Implementation(UObject* Caller) override;
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+	bool CanBeInteractedWith();
+	virtual bool CanBeInteractedWith_Implementation() override;
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UPointLightComponent* GetLight() const { return Light; }
 
