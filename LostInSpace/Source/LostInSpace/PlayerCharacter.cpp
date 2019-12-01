@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 #include "Engine/World.h"
 #include "Camera/CameraComponent.h"
+#include "InteractionInterface.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -25,6 +26,12 @@ void APlayerCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not get World in %s"), *GetName())
 	}
+	GetWorld()->DebugDrawTraceTag = FName("Interaction_Trace");
+
+	if (!CameraComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No camera component registered in %s"), *GetName())
+	}
 }
 
 // Called every frame
@@ -41,13 +48,21 @@ void APlayerCharacter::Tick(float DeltaTime)
 		ECollisionChannel Channel = ECC_Visibility;
 		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams::DefaultQueryParam;
 		CollisionQueryParams.AddIgnoredActor(this);
+		CollisionQueryParams.TraceTag = FName("Interaction_Trace");
 		FCollisionResponseParams CollisionResponseParams;
 		FCollisionShape CollisionShape = FCollisionShape::MakeSphere(15);
+
+		//UE_LOG(LogTemp, Warning, TEXT("TraceStart: %s"), *StartPoint.ToString())
 
 		
 		if (World->SweepSingleByChannel(HitResult, StartPoint, EndPoint, CameraComponent->GetComponentRotation().Quaternion(), Channel, CollisionShape, CollisionQueryParams, CollisionResponseParams))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Found Something!"))
+			// check if other actor does implement interaction interface
+			bool OtherActorImplementsInterface = HitResult.Actor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass());
+			if (OtherActorImplementsInterface)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Found interactable object!"))
+			}
 		}
 
 	}
