@@ -5,6 +5,8 @@
 #include "Engine/World.h"
 #include "Camera/CameraComponent.h"
 #include "InteractionInterface.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -32,6 +34,24 @@ void APlayerCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No camera component registered in %s"), *GetName())
 	}
+
+	PC = Cast<APlayerController>(GetController());
+	if (!PC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not get player controller in %s"), *GetName())
+	}
+	if (!InteractionWidgetClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Interaction widget class defined in %s"), *GetName())
+	}
+	else
+	{
+		if (PC)
+		{
+			InteractWidget = CreateWidget<UUserWidget>(PC, InteractionWidgetClass);
+		}
+	}
+
 }
 
 // Called every frame
@@ -39,7 +59,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CameraComponent && World)
+	if (CameraComponent && World && InteractWidget)
 	{
 		// cast a ray to see if we can interact with objects
 		FVector StartPoint = CameraComponent->GetComponentLocation();
@@ -65,9 +85,22 @@ void APlayerCharacter::Tick(float DeltaTime)
 				bool bCanBeInteractedWith = IInteractionInterface::Execute_CanBeInteractedWith(OtherActor);
 				if (bCanBeInteractedWith)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Found Interactable Object!"))
+					// TODO dont do this if widget is already in viewport
+					InteractWidget->AddToViewport();
+				}
+				else
+				{
+					InteractWidget->RemoveFromViewport();
 				}
 			}
+			else
+			{
+				InteractWidget->RemoveFromViewport();
+			}
+		}
+		else
+		{
+			InteractWidget->RemoveFromViewport();
 		}
 
 	}
