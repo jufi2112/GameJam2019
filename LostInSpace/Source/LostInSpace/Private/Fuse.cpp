@@ -40,6 +40,11 @@ bool AFuse::Interact_Implementation(UObject* Caller)
 	return false;
 }
 
+bool AFuse::CanBeInteractedWith_Implementation()
+{
+	return false;
+}
+
 void AFuse::SetLightReference(UPointLightComponent* LightReference)
 {
 	if (!LightReference)

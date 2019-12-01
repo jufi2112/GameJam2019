@@ -58,10 +58,15 @@ void APlayerCharacter::Tick(float DeltaTime)
 		if (World->SweepSingleByChannel(HitResult, StartPoint, EndPoint, CameraComponent->GetComponentRotation().Quaternion(), Channel, CollisionShape, CollisionQueryParams, CollisionResponseParams))
 		{
 			// check if other actor does implement interaction interface
-			bool OtherActorImplementsInterface = HitResult.Actor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass());
+			AActor* OtherActor = HitResult.Actor.Get();
+			bool OtherActorImplementsInterface = OtherActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass());
 			if (OtherActorImplementsInterface)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Found interactable object!"))
+				bool bCanBeInteractedWith = IInteractionInterface::Execute_CanBeInteractedWith(OtherActor);
+				if (bCanBeInteractedWith)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Found Interactable Object!"))
+				}
 			}
 		}
 

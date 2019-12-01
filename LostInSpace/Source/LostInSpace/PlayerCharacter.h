@@ -56,6 +56,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWorld* World = nullptr;
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -67,5 +68,8 @@ public:
 	void SetCameraReference(UCameraComponent* CameraReference);
 
 	FORCEINLINE class UCameraComponent* GetCameraComponent() const { return CameraComponent; }
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void ShowInteractionMessage(bool bShowMessage);
 
 };
