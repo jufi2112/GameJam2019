@@ -25,4 +25,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		bool Interact(UObject* Caller);
+	virtual bool Interact_Implementation(UObject* Caller) override;
+
 };

@@ -25,3 +25,13 @@ void AKeypad::Tick(float DeltaTime)
 
 }
 
+bool AKeypad::Interact(UObject * Caller)
+{
+	return false;
+}
+
+bool AKeypad::Interact_Implementation(UObject * Caller)
+{
+	return false;
+}
+
