@@ -1,6 +1,7 @@
 # Blender v2.81 (sub 16) OBJ File: 'second floor.blend'
 # www.blender.org
 mtllib railing.mtl
+o Plane
 v 41.788124 2.509772 -7.176115
 v 53.400757 2.509772 -7.176115
 v 37.011414 -0.095791 -7.176115
